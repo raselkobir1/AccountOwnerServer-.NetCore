@@ -1,4 +1,6 @@
-﻿namespace AccountOwnerServer.Extensions
+﻿using Utilities.LoggerConfiguration;
+
+namespace AccountOwnerServer.Extensions
 {
     public static class ServiceExtensions
     {
@@ -18,6 +20,10 @@
             services.Configure<IISOptions>(options =>
             {
             });
+        }
+        public static void ConfigurationLoggerService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILoggerManager, LoggerManager>();
         }
     }
 }
