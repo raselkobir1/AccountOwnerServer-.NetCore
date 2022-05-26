@@ -13,6 +13,8 @@ namespace Entities.DTO
         public DateTime? DateOfBirth { get; set; } 
         public string? Address { get; set; }
 
+        public IEnumerable<AccountDto>? Accounts { get; set; }  
+
 
         public List<OwnerDto> SetOwnerDtoList(List<Owner> owners)
         {
