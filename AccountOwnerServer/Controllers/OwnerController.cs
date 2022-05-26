@@ -133,7 +133,7 @@ namespace AccountOwnerServer.Controllers
                     return NotFound();
                 }
 
-                var ownerModel = owner.SetOwnerModel(new Entities.Owner());
+                var ownerModel = owner.SetOwnerModel(ownerEntity);
                 _repository.Owner.UpdateOwner(ownerModel);
                 _repository.Save();
 
@@ -142,6 +142,33 @@ namespace AccountOwnerServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateOwner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteOwner(Guid id)
+        {
+            try
+            {
+                var owner = _repository.Owner.GetOwnerById(id);
+                if(owner is null)
+                {
+                    _logger.LogError($"Owner with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                if (_repository.Account.AccountsByOwner(id).Any())
+                {
+                    _logger.LogError($"Cannot delete owner with id: {id}. It has related accounts. Delete those accounts first");
+                    return BadRequest("Cannot delete owner. It has related accounts. Delete those accounts first");
+                }
+                _repository.Owner.DeleteOwner(owner);
+                _repository.Save();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
